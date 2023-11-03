@@ -61,8 +61,8 @@ async function getPincodeByCity(CityID) {
     var pool = await sql.connect(config);
     var result = await pool
       .request()
-      .input("CITY_PKID", CityID)
-      .query("SELECT CITY_PIN_CODE FROM [CITY] WHERE CITY_PKID=@CITY_PKID");
+      .input("AREA_PKID", CityID)
+      .query("SELECT AREA_PINCODE FROM [AREA] WHERE AREA_PKID=@AREA_PKID");
 
     return result.recordsets[0];
   } catch (error) {

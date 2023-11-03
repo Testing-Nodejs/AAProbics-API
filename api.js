@@ -26,6 +26,7 @@ var Dashboard = require("./apiOperations/Dashboard_alt");
 var Country = require("./apiOperations/Country");
 var State = require("./apiOperations/State");
 var City = require("./apiOperations/City");
+var Area = require("./apiOperations/Area");
 var AboutUs = require("./apiOperations/AboutUs");
 var ContactUs = require("./apiOperations/ContactUs");
 var ProductCategory = require("./apiOperations/ProductCategory");
@@ -212,7 +213,9 @@ router.get("/AdminLogin/:email/:password", async (req, res) => {
 });
 
 router.get("/ChangePassword/:email/:password", async (req, res) => {
-  res.json(await AdmDb.UpdateAdminPassword(req.params.email, req.params.password));
+  res.json(
+    await AdmDb.UpdateAdminPassword(req.params.email, req.params.password)
+  );
 });
 
 // -----------Admin Dashboard--------------- //
@@ -394,6 +397,54 @@ router.put("/City/:id", async function (req, res, next) {
   };
   try {
     res.json(await City.updateCity(req.params.id, obj));
+  } catch (err) {
+    console.error(`Error while updating`, err.message);
+    next(err);
+  }
+});
+
+// -----------------------Area----------------
+
+router.route("/Area").post(async (req, res) => {
+  let obj = {
+    ...req.body,
+  };
+
+  await Area.addArea(obj).then((data) => {
+    res.status(201).json(data);
+  });
+});
+
+router.get("/Area", async (req, res) => {
+  await Area.getAllArea().then((data) => {
+    res.json(data);
+  });
+});
+
+router.get("/AreaByCityID/:CityID", async (req, res) => {
+  await Area.GetAllAreaByCity(req.params.CityID).then((data) => {
+    res.json(data);
+  });
+});
+
+router.get("/GetCompleteLocationByPincode/:Pincode", async (req, res) => {
+  await Area.GetCompleteLocationByPincode(req.params.Pincode).then((data) => {
+    res.json(data);
+  });
+});
+
+router.route("/Area/:id").delete(async (req, res) => {
+  await Area.deleteArea(req.params.id).then((data) => {
+    res.json(data);
+  });
+});
+
+router.put("/Area/:id", async function (req, res, next) {
+  let obj = {
+    ...req.body,
+  };
+  try {
+    res.json(await Area.updateArea(req.params.id, obj));
   } catch (err) {
     console.error(`Error while updating`, err.message);
     next(err);
@@ -1017,7 +1068,6 @@ router.get("/SendMailForScienceSubscribersupdate", async (req, res) => {
 
 // -----------------------ManageScienceType----------------
 
-
 router.route("/AddScienceType").post(async (req, res) => {
   let obj = {
     ...req.body,
@@ -1027,8 +1077,6 @@ router.route("/AddScienceType").post(async (req, res) => {
     res.status(201).json(data);
   });
 });
-
-
 
 router.route("/GetScienceType/").get(async (req, res) => {
   try {
@@ -1041,14 +1089,11 @@ router.route("/GetScienceType/").get(async (req, res) => {
   }
 });
 
-
-
 router.route("/DeleteScienceType/:id").delete(async (req, res) => {
   await ManageScienceType.DeleteScienceType(req.params.id).then((data) => {
     res.json(data);
   });
 });
-
 
 router.put("/UpdateScienceType/:id", async function (req, res, next) {
   let obj = {
@@ -1354,11 +1399,13 @@ router.get("/AcceptDelayedOrders/:id", async (req, res) => {
 });
 
 router.get("/DelayedOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.DelayedOrdersByDates(req.params.fdate, req.params.tdate).then((data) => {
+  await OrderManagement.DelayedOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
-
 
 router.get("/DelayedOrdersByMonth/:Month", async (req, res) => {
   await OrderManagement.DelayedOrdersByMonth(req.params.Month).then((data) => {
@@ -1367,73 +1414,103 @@ router.get("/DelayedOrdersByMonth/:Month", async (req, res) => {
 });
 
 router.get("/PendingOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getPendingOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getPendingOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/PendingOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.getPendingOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.getPendingOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
 router.get("/AcceptedOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getAcceptedOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getAcceptedOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/AcceptedOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.geAcceptedOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.geAcceptedOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
 router.get("/PackedOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getPackedOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getPackedOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/PackedOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.getPackedOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.getPackedOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
 router.get("/DispatchedOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getDispatchedOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getDispatchedOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/DispatchedOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.getDispatchedOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.getDispatchedOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
 router.get("/DeliveredOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getDeliveredOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getDeliveredOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/DeliveredOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.getDeliveredOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.getDeliveredOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
 router.get("/RejectedOrdersByMonth/:Month", async (req, res) => {
-  await OrderManagement.getRejectedOrdersByMonth(req.params.Month).then((data) => {
-    res.json(data);
-  });
+  await OrderManagement.getRejectedOrdersByMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/RejectedOrdersByDates/:fdate/:tdate", async (req, res) => {
-  await OrderManagement.getRejectedOrdersByDates(req.params.fdate,req.params.tdate).then((data) => {
+  await OrderManagement.getRejectedOrdersByDates(
+    req.params.fdate,
+    req.params.tdate
+  ).then((data) => {
     res.json(data);
   });
 });
@@ -1543,7 +1620,6 @@ router.get("/GetCurrentDayOrders", async (req, res) => {
   });
 });
 
-
 router.get("/ProductSalesReport", async (req, res) => {
   await Reports.ProductSalesReport().then((data) => {
     res.json(data);
@@ -1557,19 +1633,18 @@ router.get("/ProductSalesReportGetMonth/:Month", async (req, res) => {
 });
 
 router.get("/ProductSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
-  await Reports.ProductSalesReportGetDate(req.params.Fdate, req.params.Tdate).then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  await Reports.ProductSalesReportGetDate(
+    req.params.Fdate,
+    req.params.Tdate
+  ).then((data) => {
+    res.json(data);
+  });
 });
 
 router.get("/ProductSalesReportGetCurrentDate/", async (req, res) => {
-  await Reports.ProductSalesReportGetCurrentDate().then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  await Reports.ProductSalesReportGetCurrentDate().then((data) => {
+    res.json(data);
+  });
 });
 
 router.get("/ProductUnitSalesReport", async (req, res) => {
@@ -1579,25 +1654,26 @@ router.get("/ProductUnitSalesReport", async (req, res) => {
 });
 
 router.get("/ProductUnitSalesReportGetMonth/:Month", async (req, res) => {
-  await Reports.ProductUnitSalesReportGetMonth(req.params.Month).then((data) => {
+  await Reports.ProductUnitSalesReportGetMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
+});
+
+router.get("/ProductUnitSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
+  await Reports.ProductUnitSalesReportGetDate(
+    req.params.Fdate,
+    req.params.Tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
-router.get("/ProductUnitSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
-  await Reports.ProductUnitSalesReportGetDate(req.params.Fdate, req.params.Tdate).then(
-    (data) => {
-      res.json(data);
-    }
-  );
-});
-
 router.get("/ProductUnitSalesReportCurrentDate/", async (req, res) => {
-  await Reports.ProductUnitSalesReportCurrentDate().then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  await Reports.ProductUnitSalesReportCurrentDate().then((data) => {
+    res.json(data);
+  });
 });
 
 router.get("/OrdersSalesByProduct/:ProductID", async (req, res) => {
@@ -1622,9 +1698,11 @@ router.get("/MemberCouponWiseSales", async (req, res) => {
 });
 
 router.get("/MemberCouponWiseSalesById/:MEMBER_PKID", async (req, res) => {
-  await Reports.MemberCouponWiseSalesById(req.params.MEMBER_PKID).then((data) => {
-    res.json(data);
-  });
+  await Reports.MemberCouponWiseSalesById(req.params.MEMBER_PKID).then(
+    (data) => {
+      res.json(data);
+    }
+  );
 });
 
 router.get("/MemberCouponWiseSalesFilter/:Type", async (req, res) => {
@@ -1720,25 +1798,26 @@ router.get("/GetCurrentYearSalesReport", async (req, res) => {
 });
 
 router.get("/ProductWiseSalesReportGetMonth/:Month", async (req, res) => {
-  await Reports.ProductWiseSalesReportGetMonth(req.params.Month).then((data) => {
+  await Reports.ProductWiseSalesReportGetMonth(req.params.Month).then(
+    (data) => {
+      res.json(data);
+    }
+  );
+});
+
+router.get("/ProductWiseSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
+  await Reports.ProductWiseSalesReportGetDate(
+    req.params.Fdate,
+    req.params.Tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
-router.get("/ProductWiseSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
-  await Reports.ProductWiseSalesReportGetDate(req.params.Fdate, req.params.Tdate).then(
-    (data) => {
-      res.json(data);
-    }
-  );
-});
-
 router.get("/ProductWiseSalesReportGetCurrentDate/", async (req, res) => {
-  await Reports.ProductWiseSalesReportGetCurrentDate().then(
-    (data) => {
-      res.json(data);
-    }
-  );
+  await Reports.ProductWiseSalesReportGetCurrentDate().then((data) => {
+    res.json(data);
+  });
 });
 
 router.get("/MemberWiseSalesReportGetMonth/:Month", async (req, res) => {
@@ -1748,41 +1827,44 @@ router.get("/MemberWiseSalesReportGetMonth/:Month", async (req, res) => {
 });
 
 router.get("/MemberWiseSalesReportGetDate/:Fdate/:Tdate", async (req, res) => {
-  await Reports.MemberWiseSalesReportGetDate(req.params.Fdate, req.params.Tdate).then(
-    (data) => {
-      res.json(data);
-    }
-  );
-});
-
-router.get("/MemberWiseSalesReportGetCurrentDate/", async (req, res) => {
-  await Reports.MemberWiseSalesReportGetCurrentDate().then(
-    (data) => {
-      res.json(data);
-    }
-  );
-});
-
-router.get("/GetCurrentYearSalesReportByMonth/:Month", async (req, res) => {
-  await Reports.GetCurrentYearSalesReportByMonth(req.params.Month).then((data) => {
+  await Reports.MemberWiseSalesReportGetDate(
+    req.params.Fdate,
+    req.params.Tdate
+  ).then((data) => {
     res.json(data);
   });
 });
 
-router.get("/GetCurrentYearSalesReportByDate/:Fdate/:Tdate", async (req, res) => {
-  await Reports.GetCurrentYearSalesReportByDate(req.params.Fdate, req.params.Tdate).then(
+router.get("/MemberWiseSalesReportGetCurrentDate/", async (req, res) => {
+  await Reports.MemberWiseSalesReportGetCurrentDate().then((data) => {
+    res.json(data);
+  });
+});
+
+router.get("/GetCurrentYearSalesReportByMonth/:Month", async (req, res) => {
+  await Reports.GetCurrentYearSalesReportByMonth(req.params.Month).then(
     (data) => {
       res.json(data);
     }
   );
 });
 
-router.get("/GetCurrentYearSalesReportByCdate/", async (req, res) => {
-  await Reports.GetCurrentYearSalesReportByCdate().then(
-    (data) => {
+router.get(
+  "/GetCurrentYearSalesReportByDate/:Fdate/:Tdate",
+  async (req, res) => {
+    await Reports.GetCurrentYearSalesReportByDate(
+      req.params.Fdate,
+      req.params.Tdate
+    ).then((data) => {
       res.json(data);
-    }
-  );
+    });
+  }
+);
+
+router.get("/GetCurrentYearSalesReportByCdate/", async (req, res) => {
+  await Reports.GetCurrentYearSalesReportByCdate().then((data) => {
+    res.json(data);
+  });
 });
 
 // ------------------------- Product Stock History ----------------------
@@ -1936,7 +2018,6 @@ router.route("/SendMailAnncouncement").post(async (req, res) => {
     res.status(201).json(data);
   });
 });
-
 
 // -------END----------------------------------------------------//
 var port = process.env.PORT || 7765;

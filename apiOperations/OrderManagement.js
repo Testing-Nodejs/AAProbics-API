@@ -148,7 +148,7 @@ async function PlaceOrder(obj) {
             var mailOptions = {
               from: "testing.vss12@gmail.com",
               to: sendmail.recordset[0].REGISTERED_USERS_EMAIL,
-              cc: 'admin@aaprobics.com',
+              cc: 'shri@aaprobics.com',
               subject: "Customer Placed New Order!",
               html: `<html><head>
               <style>
@@ -264,7 +264,7 @@ async function getOrderItems(OrderID) {
       .request()
       .input("USER_ADDRESS_PKID", result.recordsets[0][0].ORDERS_ADDRESS_FKID)
       .query(
-        "select [USER_ADDRESS_NAME], [USER_ADDRESS_PHONE], [USER_ADDRESS_TYPE], [USER_ADDRESS_HOUSE_NO], [USER_ADDRESS_STREET], [CITY_NAME], [STATE_NAME], [COUNTRY_NAME], [USER_ADDRESS_ZIPCODE], [USER_ADDRESS_DEFAULT] from [dbo].[USER_ADDRESS] join [dbo].[CITY] on [CITY_PKID] = [USER_ADDRESS_CITY_FKID] join [dbo].[STATE] on [STATE_PKID] = [USER_ADDRESS_STATE_FKID] join [dbo].[COUNTRY] on [COUNTRY_PKID] = [USER_ADDRESS_COUNTRY_FKID] where [USER_ADDRESS_PKID] = @USER_ADDRESS_PKID"
+        "select AREA_NAME,[USER_ADDRESS_NAME], [USER_ADDRESS_PHONE], [USER_ADDRESS_TYPE], [USER_ADDRESS_HOUSE_NO], [USER_ADDRESS_STREET], [CITY_NAME], [STATE_NAME], [COUNTRY_NAME], [USER_ADDRESS_ZIPCODE], [USER_ADDRESS_DEFAULT] from [dbo].[USER_ADDRESS] join [dbo].[CITY] on [CITY_PKID] = [USER_ADDRESS_CITY_FKID] join [dbo].[STATE] on [STATE_PKID] = [USER_ADDRESS_STATE_FKID] join [dbo].[AREA] on [AREA_PKID] = [USER_ADDRESS_AREA_FKID] join [dbo].[COUNTRY] on [COUNTRY_PKID] = [USER_ADDRESS_COUNTRY_FKID] where [USER_ADDRESS_PKID] = @USER_ADDRESS_PKID"
       );
 
     var couponData = [];
@@ -309,7 +309,7 @@ async function getOrderItems(OrderID) {
       .request()
       .input("USER_ADDRESS_PKID", result.recordsets[0][0].ORDERS_ADDRESS_FKID)
       .query(
-        "select [USER_ADDRESS_NAME], [USER_ADDRESS_PHONE], [USER_ADDRESS_TYPE], [USER_ADDRESS_HOUSE_NO], [USER_ADDRESS_STREET], [CITY_NAME], [STATE_NAME], [COUNTRY_NAME], [USER_ADDRESS_ZIPCODE], [USER_ADDRESS_DEFAULT] from [dbo].[USER_ADDRESS] join [dbo].[CITY] on [CITY_PKID] = [USER_ADDRESS_CITY_FKID] join [dbo].[STATE] on [STATE_PKID] = [USER_ADDRESS_STATE_FKID] join [dbo].[COUNTRY] on [COUNTRY_PKID] = [USER_ADDRESS_COUNTRY_FKID] where [USER_ADDRESS_PKID] = @USER_ADDRESS_PKID"
+        "select AREA_NAME, [USER_ADDRESS_NAME], [USER_ADDRESS_PHONE], [USER_ADDRESS_TYPE], [USER_ADDRESS_HOUSE_NO], [USER_ADDRESS_STREET], [CITY_NAME], [STATE_NAME], [COUNTRY_NAME], [USER_ADDRESS_ZIPCODE], [USER_ADDRESS_DEFAULT] from [dbo].[USER_ADDRESS] join [dbo].[CITY] on [CITY_PKID] = [USER_ADDRESS_CITY_FKID] join [dbo].[AREA] on [AREA_PKID] = [USER_ADDRESS_AREA_FKID] join [dbo].[STATE] on [STATE_PKID] = [USER_ADDRESS_STATE_FKID] join [dbo].[COUNTRY] on [COUNTRY_PKID] = [USER_ADDRESS_COUNTRY_FKID] where [USER_ADDRESS_PKID] = @USER_ADDRESS_PKID"
       );
 
     OrderObject = {

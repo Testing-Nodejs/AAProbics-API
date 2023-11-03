@@ -18,7 +18,7 @@ const config = {
   // connectionLimit: 100,
   // user: "sa",
   // password: "vss",
-  // server: "192.168.1.8",
+  // server: "192.168.1.4",
   // database: "AA_Probics",
 
   pool: {
