@@ -4,8 +4,8 @@
   "main": "api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "body-parser": "~1.0.1",
@@ -24,6 +24,7 @@
     "nocache": "^3.0.3",
     "nodemailer": "^6.7.5",
     "nodemailer-smtp-transport": "^2.7.4",
+    "pm2": "^5.3.1",
     "qrcode": "^1.5.3",
     "tedious": "^14.2.0",
     "url": "^0.11.0"

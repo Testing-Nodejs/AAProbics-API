@@ -120,44 +120,6 @@ async function getAllProducts() {
           },
         ],
       };
-      // Obj = {
-      //   slug: "Vitamin D31",
-      //   name: "Vitamin D31",
-      //   desc: "Vitamin D31",
-      //   price: 0,
-      //   description:
-      //     "Globally, 50% of the population has vitamin D insufficiency. AA Probics vitamin D gummies increase calcium absorption for strong bones and teeth.",
-      //   images: [
-      //     "images/products/product-1.jpg",
-      //     "images/products/product-1-1.jpg",
-      //   ],
-      //   badges: "new",
-      //   rating: 5,
-      //   reviews: 2,
-      //   availability: "in-stock",
-      //   brand: "brandix",
-      //   categories: ["Human Nutrition"],
-      //   specification: [
-      //     {
-      //       name: "General",
-      //       features: [
-      //         { name: "Active Ingredients", value: "Vitamin D3" },
-      //         { name: "Each Gummy Contains", value: "850IU" },
-      //         { name: "Serving Size", value: "Adults : 1 gummy/day" },
-      //         { name: "Available Flavours", value: "Berry" },
-      //         { name: "Available Shapes", value: "Gum Drop and Coin Shape" },
-      //       ],
-      //     },
-      //     {
-      //       name: "Features",
-      //       features: [
-      //         { name: "Stronger Teeth", value: "" },
-      //         { name: "Helps build Muscle Strength", value: "" },
-      //         { name: "Helps in Calcium Absorption", value: "" },
-      //       ],
-      //     },
-      //   ],
-      // };
       kimoArray.push(Obj);
     }
     return kimoArray;
@@ -173,10 +135,11 @@ async function ProductsByCat(CategoryID) {
   try {
     var result = await pool
       .request()
-      .input("PRODUCT_SUB_CAT_FKID", CategoryID)
-      .query(
-        "select *, (select count(distinct[PRODUCT_REVIEWS_COMMENTS]) from [dbo].[PRODUCT_REVIEWS] where [PRODUCT_REVIEWS_PRODUCT_FKID] = pt.PRODUCT_PKID) as 'REVIEW_COUNT',isnull((select AVG(CAST([PRODUCT_REVIEWS_STAR_RATINGS] as int)) FROM [PRODUCT_REVIEWS] WHERE [PRODUCT_REVIEWS_PRODUCT_FKID] = pt.PRODUCT_PKID), 0) as 'RATINGS_AVERAGE' from [dbo].[PRODUCTS] AS pt where pt.PRODUCT_SUB_CAT_FKID = @PRODUCT_SUB_CAT_FKID"
-      );
+      // .query(
+      //   "select *, (select count(distinct[PRODUCT_REVIEWS_COMMENTS]) from [dbo].[PRODUCT_REVIEWS] where [PRODUCT_REVIEWS_PRODUCT_FKID] = pt.PRODUCT_PKID) as 'REVIEW_COUNT',isnull((select AVG(CAST([PRODUCT_REVIEWS_STAR_RATINGS] as int)) FROM [PRODUCT_REVIEWS] WHERE [PRODUCT_REVIEWS_PRODUCT_FKID] = pt.PRODUCT_PKID), 0) as 'RATINGS_AVERAGE' from [dbo].[PRODUCTS] AS pt"
+      // );
+      .input("categoryID", CategoryID)
+      .execute("AllProductsWithRatingsByCat");
 
     var kimo = result.recordsets[0];
 
@@ -185,7 +148,7 @@ async function ProductsByCat(CategoryID) {
         .request()
         .input("PRODUCT_UNIT_PRODUCT_FKID", kimo[i].PRODUCT_PKID)
         .query(
-          "  select min(PRODUCT_UNIT_ACTUAL_PRICE) as minprice, max(PRODUCT_UNIT_ACTUAL_PRICE) as maxprice from PRODUCT_UNIT where PRODUCT_UNIT_PRODUCT_FKID = @PRODUCT_UNIT_PRODUCT_FKID"
+          "select min(PRODUCT_UNIT_SELLING_PRICE) as minprice, max(PRODUCT_UNIT_SELLING_PRICE) as maxprice,min(PRODUCT_UNIT_GENERAL_DISCOUNT) as mindis, max(PRODUCT_UNIT_GENERAL_DISCOUNT) as maxdis,min(PRODUCT_UNIT_ACTUAL_PRICE) as minaprice, max(PRODUCT_UNIT_ACTUAL_PRICE) as maxaprice  from PRODUCT_UNIT where PRODUCT_UNIT_PRODUCT_FKID = @PRODUCT_UNIT_PRODUCT_FKID"
         );
 
       var res3 = await pool
@@ -200,16 +163,31 @@ async function ProductsByCat(CategoryID) {
         name: kimo[i].PRODUCT_NAME,
         desc: kimo[i].PRODUCT_NAME,
         price:
-          res2.recordsets[0][0].minprice +
-          " - " +
-          res2.recordsets[0][0].maxprice,
+          res2.recordsets[0][0].minprice === res2.recordsets[0][0].maxprice
+            ? res2.recordsets[0][0].minprice
+            : res2.recordsets[0][0].minprice +
+              " - ₹" +
+              res2.recordsets[0][0].maxprice,
+        Actualprice:
+          res2.recordsets[0][0].minaprice === res2.recordsets[0][0].maxaprice
+            ? res2.recordsets[0][0].minaprice
+            : res2.recordsets[0][0].minaprice +
+              " - " +
+              res2.recordsets[0][0].maxaprice,
         description: kimo[i].PRODUCT_DEFINITION,
         images: [
           kimo[i].PRODUCT_IMAGE_1,
           kimo[i].PRODUCT_IMAGE_2,
           kimo[i].PRODUCT_IMAGE_3,
         ],
-        badges: "new",
+        badges:
+          res2.recordsets[0][0].mindis === res2.recordsets[0][0].maxdis
+            ? res2.recordsets[0][0].mindis + "% off"
+            : res2.recordsets[0][0].mindis +
+              "%" +
+              " - " +
+              res2.recordsets[0][0].maxdis +
+              "% off",
         rating: kimo[i].RATINGS_AVERAGE,
         reviews: kimo[i].REVIEW_COUNT,
         availability: "in-stock",
