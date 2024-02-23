@@ -82,20 +82,20 @@ app.use(
 
 // ----CORS Configuration----
 
-//app.use(cors());
+app.use(cors());
 
-// app.options("*", cors());
+app.options("*", cors());
 
-//app.use(cors({ origin: true, credentials: true }));
-//app.use(function (req, res, next) {
- //res.header("Access-Control-Allow-Origin", "*");
-  //res.header(
-    //"Access-Control-Allow-Methods",
-    //"GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  //);
+app.use(cors({ origin: true, credentials: true }));
+app.use(function (req, res, next) {
+ res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
 
-  //next();
-//});
+  next();
+});
 
 // ----CORS Configuration---
 
